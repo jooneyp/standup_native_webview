@@ -1,0 +1,3 @@
+rootProject.name = 'standup_native_webview'
+
+include ':app'
