@@ -28,6 +28,10 @@ NSString *const kGCMMessageIDKey = @"gcm.message_id";
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+  NSString *newAgent = @"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_3) AppleWebKit/602.4.8 (KHTML, like Gecko) Version/10.0.3 Safari/602.4.8";
+  NSDictionary *dictionary = [[NSDictionary alloc] initWithObjectsAndKeys:newAgent, @"UserAgent", nil];
+  [[NSUserDefaults standardUserDefaults] registerDefaults:dictionary];
+  
   NSURL *jsCodeLocation;
   jsCodeLocation = [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index.ios" fallbackResource:nil];
   RCTRootView *rootView = [[RCTRootView alloc] initWithBundleURL:jsCodeLocation
@@ -56,9 +60,11 @@ NSString *const kGCMMessageIDKey = @"gcm.message_id";
   [FIRApp configure];
   
   // Add observer for InstanceID token refresh callback.
+  NSString *token = [[FIRInstanceID instanceID] token];
+  NSLog(@"InstanceID token: %@", token);
   [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(tokenRefreshNotification:)
                                                name:kFIRInstanceIDTokenRefreshNotification object:nil];
-  NSString *token = [[FIRInstanceID instanceID] token];
+  [[FIRMessaging messaging] subscribeToTopic:@"/topics/allDevice"];
 
   return YES;
 }
